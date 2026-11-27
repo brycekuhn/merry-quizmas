@@ -220,14 +220,21 @@ function buildPlan() {
   }
   const ids = playerIds();
   const rounds = [], skipped = [];
+  // Family questions ("family": true) always come up, spread across the trivia rounds in proportion to their size.
+  const triviaPool = content.trivia || [];
+  const family = triviaPool.filter((x) => x.family), general = triviaPool.filter((x) => !x.family);
+  const triviaTotal = ROUND_ORDER.filter((k) => settings[k].on && ROUNDS[k].kind === "trivia").reduce((s, k) => s + settings[k].n, 0);
+  const triviaId = (x) => "t" + hash(x.q);
   for (const key of ROUND_ORDER) {
     const cfg = settings[key], meta = ROUNDS[key];
     if (!cfg.on) continue;
     let items = [];
     if (meta.kind === "trivia") {
-      items = take(content.trivia || [], cfg.n, (x) => "t" + hash(x.q)).map((x) => {
+      const quota = Math.min(cfg.n, Math.ceil((family.length * cfg.n) / Math.max(1, triviaTotal)));
+      const fam = take(family, quota, triviaId);
+      items = shuffle(fam.concat(take(general, cfg.n - fam.length, triviaId))).map((x) => {
         const order = shuffle([0, 1, 2, 3].slice(0, x.a.length));
-        return { q: x.q, options: order.map((i) => x.a[i]), answer: order.indexOf(0), fact: x.fact || "" };
+        return { q: x.q, options: order.map((i) => x.a[i]), answer: order.indexOf(0), fact: x.fact || "", family: !!x.family };
       });
     } else if (meta.kind === "nose") {
       for (let i = 0; i < cfg.n; i++) items.push({ pose: randomPose() });
@@ -304,7 +311,7 @@ function startStage() {
 
 function payload(kind, item, stageName) {
   switch (kind) {
-    case "trivia": return { text: item.q, options: item.options };
+    case "trivia": return { text: item.q, options: item.options, family: !!item.family };
     case "nose": return { pose: item.pose };
     case "closest": return { text: item.q, unit: item.unit || "" };
     case "fake":
@@ -370,7 +377,7 @@ function doReveal() {
         add(pid, Math.round(500 + 500 * Math.max(0, Math.min(1, (item.span.end - a.t) / span))));
       }
     }
-    reveal = { text: item.q, options: item.options, answer: item.answer, counts, right, fact: item.fact };
+    reveal = { text: item.q, options: item.options, answer: item.answer, counts, right, fact: item.fact, family: !!item.family };
   } else if (kind === "nose") {
     const target = noseAt(item.pose), pins = [];
     for (const [pid, a] of Object.entries(got)) {
@@ -548,7 +555,7 @@ function stageHTML() {
   if (ph === "scores") return scoresHTML();
   if (ph === "final") return finalHTML();
   if (ph === "reveal") return revealHTML();
-  if (k === "trivia") return `<h1 class="q">${esc(q.text)}</h1>${tilesHTML(q.options)}`;
+  if (k === "trivia") return `${q.family ? FAMILY_TAG : ""}<h1 class="q">${esc(q.text)}</h1>${tilesHTML(q.options)}`;
   if (k === "nose") return noseAskHTML();
   if (k === "closest") return `<h1 class="q huge">${esc(q.text)}</h1><p class="under muted">Type your guess${q.unit ? ` (in ${esc(q.unit)})` : ""} on your phone.</p>`;
   if (k === "fake" && ph === "write") return `<h1 class="q huge">${blanks(q.text)}</h1><p class="under muted">Write a believable fake answer on your phone. If you know the real one, keep it to yourself!</p>`;
@@ -558,6 +565,7 @@ function stageHTML() {
   return "";
 }
 
+const FAMILY_TAG = `<p class="prompt"><span class="badge">🏡 Family question</span></p>`;
 function blanks(text) { return esc(text).replace(/_{2,}/g, '<span class="blank"></span>'); }
 
 function tilesHTML(options, rv) {
@@ -637,7 +645,7 @@ function revealHTML() {
   const k = state.kind, rv = fillLists(state.reveal || {});
   const pts = rv.pts || {};
   if (k === "trivia") {
-    return `<h1 class="q">${esc(rv.text)}</h1>${tilesHTML(rv.options, rv)}<div class="under">` +
+    return `${rv.family ? FAMILY_TAG : ""}<h1 class="q">${esc(rv.text)}</h1>${tilesHTML(rv.options, rv)}<div class="under">` +
       (rv.right.length ? `Got it: ${faces(rv.right)}` : `<span class="muted">Nobody got this one.</span>`) +
       (rv.fact ? `<p class="fact" style="margin-top:.4em">${esc(rv.fact)}</p>` : "") + `</div>`;
   }

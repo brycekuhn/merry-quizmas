@@ -190,7 +190,7 @@ function gameHTML() {
   if (timeUp()) return `<div class="center" style="margin:auto"><div class="huge">⏰</div><h1>Time’s up!</h1><p class="lead">Look at the TV.</p></div>`;
 
   if (k === "trivia") {
-    return `<h2>${esc(q.text)}</h2><div class="choices grid">${q.options.map((o, i) => `<button class="choice ${CHOICES[i].cls}" data-pick="${i}"><span class="ic">${CHOICES[i].icon}</span><span>${esc(o)}</span></button>`).join("")}</div>`;
+    return `${q.family ? `<p class="rank-line">🏡 Family question</p>` : ""}<h2>${esc(q.text)}</h2><div class="choices grid">${q.options.map((o, i) => `<button class="choice ${CHOICES[i].cls}" data-pick="${i}"><span class="ic">${CHOICES[i].icon}</span><span>${esc(o)}</span></button>`).join("")}</div>`;
   }
   if (k === "nose") return noseHTML();
   if (k === "closest") {

@@ -1,6 +1,9 @@
 {
-  "_howTo": "Edit freely. Trivia: the first answer in \"a\" is the correct one (the game shuffles them). Fake fact: \"___\" marks the blank, \"accept\" lists other spellings of the real answer, \"decoys\" are house fakes used when there are few players. aboutYou prompts are what phones ask while people wait in the lobby.",
+  "_howTo": "Edit freely. Trivia: the first answer in \"a\" is the correct one (the game shuffles them). Add \"family\": true to a trivia question to make it come up in every game, spread across the trivia rounds. Fake fact: \"___\" marks the blank, \"accept\" lists other spellings of the real answer, \"decoys\" are house fakes used when there are few players. aboutYou prompts are what phones ask while people wait in the lobby.",
   "trivia": [
+    { "family": true, "q": "What did Uncle Jay do after getting his Gloucester Rangers leather jacket?", "a": ["Put it on and skipped around the living room", "Wore it to bed that night", "Did a victory lap around the block", "Made everyone salute it"] },
+    { "family": true, "q": "Taryn is going to be a general in what army?", "a": ["The civilian army", "The Salvation Army", "The Canadian Army", "Santa’s elf army"] },
+    { "family": true, "q": "What name did Popo struggle to read?", "a": ["Rickey Dewan", "Rick Dawson", "Ricky Bobby", "Rocky Dupuis"] },
     { "q": "What is Santa’s postal code in Canada?", "a": ["H0H 0H0", "N0R 7H5", "X0X 0X0", "J1N 6L3"], "fact": "Canada Post’s elves answer letters sent to Santa at the North Pole, H0H 0H0." },
     { "q": "Which Canadian city sends Boston a giant Christmas tree every year?", "a": ["Halifax", "St. John’s", "Quebec City", "Moncton"], "fact": "It’s a thank-you for Boston’s help after the 1917 Halifax Explosion." },
     { "q": "Which country gives London the big Christmas tree in Trafalgar Square every year?", "a": ["Norway", "Sweden", "Denmark", "Finland"], "fact": "Oslo has sent one every year since 1947 to thank Britain for its help during the Second World War." },

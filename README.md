@@ -49,7 +49,7 @@ GitHub Pages serves the site straight from the root of the `main` branch, with n
 
 Everything lives in [`content.json`](content.json):
 
-- **trivia:** the first answer in `a` is the correct one. The game shuffles them.
+- **trivia:** the first answer in `a` is the correct one. The game shuffles them. Add `"family": true` to make a question come up in every game. Family questions are spread across the trivia rounds and marked “🏡 Family question” on screen.
 - **closest:** `answer` is a number. Add `unit` (like `"gifts"`), or leave it off for years.
 - **fake:** `___` marks the blank. `accept` lists other ways of writing the real answer, so a player can’t submit the truth as a fake. `decoys` are fakes the game adds when there are only a few players.
 - **superlatives** and **aboutYou:** plain lists of prompts.
