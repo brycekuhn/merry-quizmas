@@ -1,0 +1,22 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "rooms": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".validate": "$code.matches(/^[A-Z]{4}$/)",
+        "players": {
+          "$pid": {
+            "name": { ".validate": "newData.isString() && newData.val().length <= 20" },
+            "avatar": { ".validate": "newData.isString() && newData.val().length <= 16" }
+          }
+        },
+        "about": {
+          "$pid": { ".validate": "newData.hasChildren() || !newData.exists()" }
+        }
+      }
+    }
+  }
+}
