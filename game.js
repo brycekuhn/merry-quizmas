@@ -87,6 +87,15 @@ export function numText(n, unit) {
   return !unit && Number.isInteger(n) && n >= 1000 && n <= 2999 ? String(n) : points(n);
 }
 
+// Firebase drops empty lists (and turns sparse ones into objects), so a reveal read back from the
+// database can be missing "nobody" lists. Put them back before anything calls .length or .includes.
+export function fillLists(rv) {
+  const list = (v) => (Array.isArray(v) ? v : v && typeof v === "object" ? Object.values(v) : []);
+  const out = { ...rv, right: list(rv.right), winners: list(rv.winners), pins: list(rv.pins), guesses: list(rv.guesses), counts: rv.counts || {} };
+  if (rv.options) out.options = list(rv.options).map((o) => (typeof o === "object" && o ? { ...o, authors: list(o.authors), voters: list(o.voters) } : o));
+  return out;
+}
+
 // ---------- reindeer art (original drawing, 100 × 100 box) ----------
 
 const NOSE = { x: 50, y: 61.5 };

@@ -3,7 +3,7 @@
 import {
   connect, ROUNDS, ROUND_ORDER, CHOICES, DURATION, NOSE_PREVIEW_MS, GAME_NAME,
   makeCode, esc, norm, hash, shuffle, lsGet, lsSet, plural, points, numText,
-  randomPose, noseAt, deerSVG, noseSVG,
+  randomPose, noseAt, deerSVG, noseSVG, fillLists,
 } from "./game.js";
 
 const params = new URLSearchParams(location.search);
@@ -634,7 +634,7 @@ function noseAskHTML() {
 }
 
 function revealHTML() {
-  const k = state.kind, rv = state.reveal || {}, q = state.q || {};
+  const k = state.kind, rv = fillLists(state.reveal || {});
   const pts = rv.pts || {};
   if (k === "trivia") {
     return `<h1 class="q">${esc(rv.text)}</h1>${tilesHTML(rv.options, rv)}<div class="under">` +

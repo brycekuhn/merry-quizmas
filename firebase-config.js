@@ -1,13 +1,13 @@
-// Paste your Firebase web app config here (Project settings > Your apps > SDK setup and configuration > Config).
-// These values identify your project; they aren't secret. What protects the database is database.rules.json.
-// While this is null, the game runs in practice mode: it only works between tabs in one browser on one computer.
-export const firebaseConfig = null;
-
-// Example of what it looks like once filled in:
-// export const firebaseConfig = {
-//   apiKey: "AIza...",
-//   authDomain: "your-project.firebaseapp.com",
-//   databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-//   projectId: "your-project",
-//   appId: "1:1234567890:web:abc123",
-// };
+// Firebase web app config (Project settings > Your apps > SDK setup and configuration > Config).
+// These values identify the project; they aren't secret. What protects the database is database.rules.json.
+// Set this to null to run in practice mode, which only works between tabs in one browser on one computer.
+// Adding ?practice to the address also forces practice mode.
+export const firebaseConfig = {
+  apiKey: "AIzaSyAVPPz-Iwpm3L9BRnH48K1w1gAMnvIxuvw",
+  authDomain: "merry-quizmas-673b5.firebaseapp.com",
+  databaseURL: "https://merry-quizmas-673b5-default-rtdb.firebaseio.com",
+  projectId: "merry-quizmas-673b5",
+  storageBucket: "merry-quizmas-673b5.firebasestorage.app",
+  messagingSenderId: "310273780951",
+  appId: "1:310273780951:web:76855aaf968266e0225492",
+};

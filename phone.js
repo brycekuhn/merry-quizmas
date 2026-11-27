@@ -1,7 +1,7 @@
 // The phone screen. It joins a room, shows what the TV is doing and sends this player's answers.
 import {
   connect, CHOICES, AVATARS, NAME_MAX, CODE_RE, NOSE_PREVIEW_MS, GAME_NAME,
-  esc, uid, norm, hash, lsGet, lsSet, points, plural, numText, deerSVG, noseSVG,
+  esc, uid, norm, hash, lsGet, lsSet, points, plural, numText, deerSVG, noseSVG, fillLists,
 } from "./game.js";
 
 const params = new URLSearchParams(location.search);
@@ -253,7 +253,7 @@ function noseHTML() {
 }
 
 function revealHTML() {
-  const k = state.kind, rv = state.reveal || {}, pts = (rv.pts || {})[me.pid] || 0;
+  const k = state.kind, rv = fillLists(state.reveal || {}), pts = (rv.pts || {})[me.pid] || 0;
   const v = mine && mine.v;
   let head = "", line = "";
   if (k === "trivia") {
