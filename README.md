@@ -16,6 +16,7 @@ A Christmas party game for about 10 people. One screen (a TV or laptop) runs the
 | 🤥 Fake fact | A real but strange tradition with a blank. Everyone writes a fake answer, then tries to find the real one. Fooling people scores. |
 | 🕵️ Who said that? | While waiting in the lobby, each phone asks two questions about its player. Later, everyone guesses who wrote each answer. |
 | 🏆 Most likely to… | Vote for someone in the room. Voting with the crowd scores. |
+| 🏡 Family trivia | Questions about the family, some with photos. It uses every question marked `"family"` in `content.json`. |
 | ✨ Final trivia | Trivia worth double points. |
 
 In the lobby, the host can turn rounds on or off and choose how many questions each has. The game avoids repeating questions from earlier games on the same TV until it runs out.
@@ -49,7 +50,7 @@ GitHub Pages serves the site straight from the root of the `main` branch, with n
 
 Everything lives in [`content.json`](content.json):
 
-- **trivia:** the first answer in `a` is the correct one. The game shuffles them. Add `"family": true` to make a question come up in every game. Family questions are spread across the trivia rounds and marked “🏡 Family question” on screen.
+- **trivia:** the first answer in `a` is the correct one. The game shuffles them. Add `"family": true` to put a question in the Family trivia round instead of the regular trivia rounds.
 - **closest:** `answer` is a number. Add `unit` (like `"gifts"`), or leave it off for years.
 - **fake:** `___` marks the blank. `accept` lists other ways of writing the real answer, so a player can’t submit the truth as a fake. `decoys` are fakes the game adds when there are only a few players.
 - **superlatives** and **aboutYou:** plain lists of prompts.

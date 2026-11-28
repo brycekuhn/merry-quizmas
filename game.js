@@ -33,10 +33,12 @@ export const ROUNDS = {
     how: "Remember the questions you answered when you joined? Guess who wrote each answer. You score when people guess wrong about yours." },
   vote: { kind: "vote", name: "Most likely to…", icon: "🏆", n: 4, max: 10,
     how: "Vote for someone in the room. If you vote with the crowd, you score." },
+  family: { kind: "trivia", pool: "family", name: "Family trivia", icon: "🏡", n: 8, max: 20,
+    how: "Every question is about this family, and some come with photos. The faster you answer, the more points you get." },
   final: { kind: "trivia", name: "Final trivia", icon: "✨", n: 4, max: 10, mult: 2,
     how: "Last round, and every answer is worth double. Anyone can still win." },
 };
-export const ROUND_ORDER = ["trivia", "nose", "closest", "fake", "who", "vote", "final"];
+export const ROUND_ORDER = ["trivia", "nose", "closest", "fake", "who", "vote", "family", "final"];
 
 export const DURATION = { trivia: 20, nose: 18, closest: 25, write: 50, fakevote: 30, who: 25, vote: 20 };
 export const NOSE_PREVIEW_MS = 3000;
