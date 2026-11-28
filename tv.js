@@ -82,6 +82,61 @@ const sfx = (() => {
   };
 })();
 
+// ---------- family photos ----------
+// The photos are published encrypted (see encrypt-photos.mjs). The TV unlocks them with the family
+// password, remembers the password, and shows them as blob URLs. Phones never load them.
+
+const photos = (() => {
+  const PASS_KEY = "mq-photo-pass";
+  let manifest = null, key = null;
+  const urls = {}, loading = {};
+  const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  const open = (k, bytes) => crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes.slice(0, 12) }, k, bytes.slice(12));
+  async function tryPass(pass) {
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(String(pass).trim().normalize("NFC")), "PBKDF2", false, ["deriveKey"]);
+    const k = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64(manifest.salt), iterations: manifest.iterations, hash: "SHA-256" },
+      base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    try { await open(k, b64(manifest.check)); } catch { return false; }
+    key = k;
+    lsSet(PASS_KEY, String(pass).trim());
+    manifest.files.forEach(want);
+    return true;
+  }
+  function want(name) {
+    if (!key || urls[name] || loading[name] || !manifest.files.includes(name)) return;
+    const type = /\.png$/i.test(name) ? "image/png" : /\.webp$/i.test(name) ? "image/webp" : "image/jpeg";
+    loading[name] = fetch(`photos/${name}.enc`)
+      .then((r) => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+      .then((buf) => open(key, new Uint8Array(buf)))
+      .then((plain) => { urls[name] = URL.createObjectURL(new Blob([plain], { type })); renderStage(); })
+      .catch(() => { delete loading[name]; });
+  }
+  return {
+    get exists() { return !!manifest; },
+    get unlocked() { return !!key; },
+    get count() { return manifest ? manifest.files.length : 0; },
+    url: (name) => urls[name],
+    want,
+    async init() {
+      if (!window.crypto || !crypto.subtle) return; // needs https or localhost
+      try { const r = await fetch("photos/manifest.json", { cache: "no-store" }); if (r.ok) manifest = await r.json(); } catch { /* no photos */ }
+      const saved = lsGet(PASS_KEY);
+      if (manifest && saved && !(await tryPass(saved))) lsSet(PASS_KEY, null);
+    },
+    unlock: (pass) => (manifest ? tryPass(pass) : Promise.resolve(false)),
+  };
+})();
+
+function photosHTML(names) {
+  if (!names || !names.length) return "";
+  return `<div class="photos${names.length > 1 ? " two" : ""}">${names.map((n) => {
+    const url = photos.url(n);
+    if (url) return `<img src="${url}" alt="Family photo">`;
+    photos.want(n);
+    return `<div class="ph" role="img" aria-label="${photos.unlocked ? "Loading photo" : "Photo locked"}">${photos.unlocked ? "📷" : "🔒"}</div>`;
+  }).join("")}</div>`;
+}
+
 // ---------- snow ----------
 
 function startSnow() {
@@ -121,6 +176,7 @@ async function boot() {
       fetch("content.json", { cache: "no-store" }).then((r) => { if (!r.ok) throw new Error("Couldn’t load content.json."); return r.json(); }),
     ]);
     db = backend; content = c;
+    await photos.init();
   } catch (e) {
     showMessage("Something went wrong", esc(e.message || e), `<button class="btn primary" data-act="reload">Try again</button>`);
     return;
@@ -234,7 +290,8 @@ function buildPlan() {
       const fam = take(family, quota, triviaId);
       items = shuffle(fam.concat(take(general, cfg.n - fam.length, triviaId))).map((x) => {
         const order = shuffle([0, 1, 2, 3].slice(0, x.a.length));
-        return { q: x.q, options: order.map((i) => x.a[i]), answer: order.indexOf(0), fact: x.fact || "", family: !!x.family };
+        return { q: x.q, options: order.map((i) => x.a[i]), answer: order.indexOf(0), fact: x.fact || "", family: !!x.family,
+          photos: x.photos || [], showPhotos: x.showPhotos === "question" ? "question" : "reveal" };
       });
     } else if (meta.kind === "nose") {
       for (let i = 0; i < cfg.n; i++) items.push({ pose: randomPose() });
@@ -311,7 +368,7 @@ function startStage() {
 
 function payload(kind, item, stageName) {
   switch (kind) {
-    case "trivia": return { text: item.q, options: item.options, family: !!item.family };
+    case "trivia": return { text: item.q, options: item.options, family: !!item.family, photos: item.showPhotos === "question" ? item.photos || [] : [] };
     case "nose": return { pose: item.pose };
     case "closest": return { text: item.q, unit: item.unit || "" };
     case "fake":
@@ -377,7 +434,7 @@ function doReveal() {
         add(pid, Math.round(500 + 500 * Math.max(0, Math.min(1, (item.span.end - a.t) / span))));
       }
     }
-    reveal = { text: item.q, options: item.options, answer: item.answer, counts, right, fact: item.fact, family: !!item.family };
+    reveal = { text: item.q, options: item.options, answer: item.answer, counts, right, fact: item.fact, family: !!item.family, photos: item.photos || [] };
   } else if (kind === "nose") {
     const target = noseAt(item.pose), pins = [];
     for (const [pid, a] of Object.entries(got)) {
@@ -555,7 +612,7 @@ function stageHTML() {
   if (ph === "scores") return scoresHTML();
   if (ph === "final") return finalHTML();
   if (ph === "reveal") return revealHTML();
-  if (k === "trivia") return `${q.family ? FAMILY_TAG : ""}<h1 class="q">${esc(q.text)}</h1>${tilesHTML(q.options)}`;
+  if (k === "trivia") return `${q.family ? FAMILY_TAG : ""}<h1 class="q">${esc(q.text)}</h1>${withPhotos(q.photos, tilesHTML(q.options))}`;
   if (k === "nose") return noseAskHTML();
   if (k === "closest") return `<h1 class="q huge">${esc(q.text)}</h1><p class="under muted">Type your guess${q.unit ? ` (in ${esc(q.unit)})` : ""} on your phone.</p>`;
   if (k === "fake" && ph === "write") return `<h1 class="q huge">${blanks(q.text)}</h1><p class="under muted">Write a believable fake answer on your phone. If you know the real one, keep it to yourself!</p>`;
@@ -566,6 +623,9 @@ function stageHTML() {
 }
 
 const FAMILY_TAG = `<p class="prompt"><span class="badge">🏡 Family question</span></p>`;
+function withPhotos(names, inner) {
+  return names && names.length ? `<div class="photoq">${photosHTML(names)}${inner}</div>` : inner;
+}
 function blanks(text) { return esc(text).replace(/_{2,}/g, '<span class="blank"></span>'); }
 
 function tilesHTML(options, rv) {
@@ -609,9 +669,15 @@ function lobbyHTML() {
     <section class="crowd">
       <h2>Players <span class="muted">${ids.length}</span></h2>
       <ul class="players">${list}</ul>
-      <div class="rounds card"><h3>Rounds and questions</h3><ul>${rounds}</ul>${notes.map((n) => `<p class="warn">${esc(n)}</p>`).join("")}</div>
+      <div class="rounds card"><h3>Rounds and questions</h3><ul>${rounds}</ul>${notes.map((n) => `<p class="warn">${esc(n)}</p>`).join("")}${photoNote()}</div>
     </section>
   </div>`;
+}
+
+function photoNote() {
+  if (!photos.exists) return "";
+  if (photos.unlocked) return `<p class="photo-note">📷 ${plural(photos.count, "family photo")} unlocked on this screen</p>`;
+  return `<p class="photo-note">🔒 ${plural(photos.count, "family photo")} locked <button class="btn small" data-act="unlock">Unlock</button></p>`;
 }
 
 function qrSVG(text) {
@@ -645,7 +711,7 @@ function revealHTML() {
   const k = state.kind, rv = fillLists(state.reveal || {});
   const pts = rv.pts || {};
   if (k === "trivia") {
-    return `${rv.family ? FAMILY_TAG : ""}<h1 class="q">${esc(rv.text)}</h1>${tilesHTML(rv.options, rv)}<div class="under">` +
+    return `${rv.family ? FAMILY_TAG : ""}<h1 class="q">${esc(rv.text)}</h1>${withPhotos(rv.photos, tilesHTML(rv.options, rv))}<div class="under">` +
       (rv.right.length ? `Got it: ${faces(rv.right)}` : `<span class="muted">Nobody got this one.</span>`) +
       (rv.fact ? `<p class="fact" style="margin-top:.4em">${esc(rv.fact)}</p>` : "") + `</div>`;
   }
@@ -748,6 +814,10 @@ document.addEventListener("click", async (e) => {
     window.open(`./?room=${code}&p=${n}${params.has("practice") ? "&practice" : ""}`, "_blank");
   } else if (act === "lobby") {
     if (confirm("End this game and go back to the lobby? Scores will be cleared when the next game starts.")) backToLobby();
+  } else if (act === "unlock") {
+    $("#photoerr").hidden = true;
+    $("#photodlg").showModal();
+    $("#photopass").focus();
   } else if (act === "resume" && resumeOffer) {
     openRoom(resumeOffer.saved.code, resumeOffer.st, resumeOffer.saved.plan);
     resumeOffer = null;
@@ -758,5 +828,15 @@ document.addEventListener("click", async (e) => {
   }
 });
 addEventListener("load", () => { if (state.phase === "lobby") renderStage(); });
+$("#photocancel").addEventListener("click", () => $("#photodlg").close());
+$("#photoform").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const input = $("#photopass"), err = $("#photoerr"), ok = $("#photook");
+  ok.disabled = true; ok.textContent = "Checking…"; err.hidden = true;
+  const good = await photos.unlock(input.value);
+  ok.disabled = false; ok.textContent = "Unlock";
+  if (good) { input.value = ""; $("#photodlg").close(); renderStage(); }
+  else { err.hidden = false; err.textContent = "That password didn’t work. Check for typos and try again."; input.select(); }
+});
 
 boot();

@@ -56,6 +56,19 @@ Everything lives in [`content.json`](content.json):
 
 Family in-jokes are where this game shines, so add your own.
 
+## Family photos
+
+A trivia question can show photos on the TV, either with the question or at the reveal. Because this repo is public, the photos are published **encrypted**. The TV asks for the family photo password once (the **Unlock** button in the lobby), remembers it, and decrypts the photos itself. Phones never load them.
+
+To add a photo:
+
+1. Put the original in `family-photos/`. That folder is never uploaded.
+2. Add its file name to a question in `content.json`, like `"photos": ["popo-fireplace.jpg"]`. Photos show at the reveal by default. To show them with the question, add `"showPhotos": "question"`.
+3. Run `node encrypt-photos.mjs`. It writes the locked copies to `photos/`.
+4. Commit and push.
+
+The password lives in `photo-password.txt`, which is also never uploaded. If you change it, run the script again and unlock the TV with the new one.
+
 ## Trying it on one computer
 
 ```
@@ -75,3 +88,4 @@ Open http://localhost:8090/tv.html, then click **Open a phone tab** a few times.
 | `content.json` | Questions and prompts |
 | `firebase-config.js`, `database.rules.json` | Firebase setup |
 | `serve.mjs` | A tiny local web server for testing |
+| `encrypt-photos.mjs`, `photos/` | Locks the family photos; `photos/` holds only the encrypted copies |

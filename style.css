@@ -227,6 +227,25 @@ body.tv {
 .message p { color: var(--muted); max-width: 32em; }
 .message .row { display: flex; gap: 0.8em; flex-wrap: wrap; justify-content: center; }
 
+/* family photos */
+.photoq { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.8em; align-items: center; max-width: 74em; width: 100%; margin: 0 auto; }
+.photoq .tiles { grid-template-columns: 1fr; max-width: none; }
+.photoq .tile { font-size: 1.2em; min-height: 2.6em; padding: 0.55em 0.9em; }
+.photos { display: flex; gap: 1em; justify-content: center; align-items: center; }
+.photos img, .photos .ph { display: block; max-height: 52vh; max-width: min(36vw, 32em); border-radius: 8px; border: 0.4em solid #F4F1EA; background: #F4F1EA; box-shadow: 0 0.6em 1.6em rgba(0, 0, 0, 0.45); transform: rotate(-1.5deg); }
+.photos > :nth-child(2) { transform: rotate(2deg); }
+.photos.two img, .photos.two .ph { max-width: min(22vw, 20em); max-height: 46vh; }
+.photos .ph { width: 28vh; height: 36vh; display: grid; place-items: center; font-size: 3em; color: #23415F; }
+.photo-note { font-size: 0.85em; margin-top: 0.7em; color: var(--muted); display: flex; align-items: center; gap: 0.6em; }
+.dlg { border: 1px solid var(--line); border-radius: 18px; background: var(--night-2); color: var(--snow); padding: 1.4em 1.6em; width: min(90vw, 26em); font-size: 1rem; }
+.dlg::backdrop { background: rgba(5, 12, 22, 0.72); }
+.dlg form { display: flex; flex-direction: column; gap: 0.8em; }
+.dlg h2 { font-size: 1.4em; }
+.dlg input { font: 500 1.1em/1.2 var(--body); padding: 0.6em 0.8em; border-radius: 10px; border: 2px solid var(--line); background: var(--night); color: var(--snow); }
+.dlg .row { display: flex; gap: 0.6em; }
+.dlg .err { color: #FF8A9E; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
 /* ================= PHONE ================= */
 body.phone { min-height: 100vh; min-height: 100dvh; font-size: 17px; }
 .phone main { position: relative; z-index: 1; max-width: 520px; margin: 0 auto; padding: calc(14px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px)); min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; gap: 16px; }

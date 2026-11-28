@@ -22,6 +22,16 @@
     <button id="next" class="btn primary big" hidden>Next</button>
   </div>
 </footer>
+<dialog id="photodlg" class="dlg" aria-labelledby="photodlg-h">
+  <form id="photoform">
+    <h2 id="photodlg-h">Unlock the family photos</h2>
+    <p class="muted">Enter the family photo password. This screen remembers it, so you only do this once.</p>
+    <label for="photopass" class="sr">Password</label>
+    <input id="photopass" type="password" autocomplete="off" spellcheck="false">
+    <p class="err" id="photoerr" role="alert" hidden></p>
+    <div class="row"><button class="btn primary" id="photook" type="submit">Unlock</button><button class="btn" type="button" id="photocancel">Cancel</button></div>
+  </form>
+</dialog>
 <script type="module" src="tv.js"></script>
 </body>
 </html>

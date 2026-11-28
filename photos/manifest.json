@@ -1,0 +1,14 @@
+{
+  "v": 1,
+  "iterations": 310000,
+  "salt": "H7J08JOV0eGw6zEgx+bmeQ==",
+  "check": "yQ7/drFGdSXB/gmgkWGPWsgvQKHmGCAoRgiTu+7QwOPRLd3DQGXt6Rk=",
+  "files": [
+    "book.jpg",
+    "jay-dashiki.jpg",
+    "leggings-1.jpg",
+    "leggings-2.jpg",
+    "popo-fireplace.jpg",
+    "value-village-top.jpg"
+  ]
+}
