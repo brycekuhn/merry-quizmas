@@ -122,6 +122,7 @@ body.tv {
 .rounds .off .rn { color: var(--muted); text-decoration: line-through; }
 .stepper { display: inline-flex; align-items: center; gap: 0.2em; }
 .stepper button { appearance: none; border: 1px solid var(--line); background: var(--night-3); border-radius: 6px; width: 1.5em; height: 1.5em; cursor: pointer; padding: 0; line-height: 1; }
+.stepper button:disabled { opacity: 0.35; cursor: default; }
 .stepper span { min-width: 1.4em; text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; }
 .rounds .warn { font-size: 0.8em; color: var(--gold); margin-top: 0.5em; }
 

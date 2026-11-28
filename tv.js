@@ -33,6 +33,11 @@ function loadSettings() {
   return out;
 }
 function saveSettings() { lsSet(SETTINGS_KEY, settings); }
+// The most questions a round can have: its own limit, or for Family trivia, how many family questions exist.
+function roundMax(k) {
+  if (ROUNDS[k].pool !== "family") return ROUNDS[k].max;
+  return Math.max(1, ((content && content.trivia) || []).filter((x) => x.family).length);
+}
 
 // ---------- people ----------
 
@@ -595,11 +600,13 @@ function renderStage() {
   // Before a room is open the stage holds a message (loading, an error, "pick up where you left off?"),
   // and late events such as a photo finishing its decryption must not wipe it.
   if (!db || state.phase === "loading") return;
+  // Animate only when the screen moves on, not when it redraws in place (a player joining, a setting changing).
   const sig = state.seq + ":" + state.phase + ":" + (noseHidden ? 1 : 0);
+  const moved = sig !== lastSig;
+  stageEl.classList.remove("enter");
   stageEl.innerHTML = stageHTML();
-  if (sig !== lastSig) {
+  if (moved) {
     lastSig = sig;
-    stageEl.classList.remove("enter");
     void stageEl.offsetWidth;
     stageEl.classList.add("enter");
   }
@@ -650,9 +657,10 @@ function lobbyHTML() {
     }).join("")
     : `<li class="empty" style="grid-column:1/-1;background:none;border:0">Waiting for the first elf to join…</li>`;
   const rounds = ROUND_ORDER.map((k) => {
-    const r = ROUNDS[k], s = settings[k];
+    const r = ROUNDS[k], s = settings[k], top = roundMax(k), n = Math.min(s.n, top);
     return `<li class="${s.on ? "" : "off"}"><button class="tg" data-act="toggle" data-k="${k}" aria-pressed="${s.on}" aria-label="${esc(r.name)}">${s.on ? "✓" : ""}</button>` +
-      `<span class="rn">${r.icon} ${esc(r.name)}</span><span class="stepper"><button data-act="dec" data-k="${k}" aria-label="Fewer questions">−</button><span>${s.n}</span><button data-act="inc" data-k="${k}" aria-label="More questions">+</button></span></li>`;
+      `<span class="rn">${r.icon} ${esc(r.name)}</span><span class="stepper"><button data-act="dec" data-k="${k}" aria-label="Fewer questions" ${n <= 1 ? "disabled" : ""}>−</button><span>${n}</span>` +
+      `<button data-act="inc" data-k="${k}" aria-label="More questions" ${n >= top ? "disabled" : ""}>+</button></span></li>`;
   }).join("");
   const notes = [];
   const authors = Object.keys(about).filter((p) => players[p] && Object.values(about[p] || {}).some((e) => e && e.a));
@@ -802,7 +810,10 @@ document.addEventListener("click", async (e) => {
   else if (act === "mute") { sfx.toggle(); sfx.unlock(); renderTop(); }
   else if (act === "toggle") { settings[k].on = !settings[k].on; saveSettings(); renderStage(); }
   else if (act === "inc" || act === "dec") {
-    settings[k].n = Math.max(1, Math.min(ROUNDS[k].max, settings[k].n + (act === "inc" ? 1 : -1)));
+    const top = roundMax(k);
+    const n = Math.max(1, Math.min(top, Math.min(settings[k].n, top) + (act === "inc" ? 1 : -1)));
+    // Family trivia turned all the way up means "all of them", so questions added later are included.
+    settings[k].n = ROUNDS[k].pool === "family" && n >= top ? ROUNDS[k].max : n;
     saveSettings(); renderStage();
   } else if (act === "kick") {
     const pid = t.dataset.pid;

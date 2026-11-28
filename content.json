@@ -3,10 +3,10 @@
   "trivia": [
     { "family": true, "q": "What did Uncle Jay do after getting his Gloucester Rangers leather jacket?", "a": ["Put it on and skipped around the living room", "Wore it to bed that night", "Did a victory lap around the block", "Made everyone salute it"] },
     { "family": true, "q": "Taryn is going to be a general in what army?", "a": ["The civilian army", "The Salvation Army", "The Canadian Army", "Santa’s elf army"] },
-    { "family": true, "q": "What name did Popo struggle to read?", "a": ["Rickey Dewan", "Rick Dawson", "Ricky Bobby", "Rocky Dupuis"] },
+    { "family": true, "q": "What name did Popo struggle to read?", "a": ["Ricky Dewan", "Perry Dewan", "Timmy Dewan", "Peter Griffin"] },
     { "family": true, "q": "How does Popo keep himself warm on Christmas?", "a": ["Curls up next to the fireplace channel on TV", "Sits on the heating vent", "Wears his winter coat inside", "Hogs the electric blanket"], "photos": ["popo-fireplace.jpg"] },
-    { "family": true, "q": "What child-size clothing did Peter get Ev?", "a": ["Pink leggings", "A unicorn onesie", "Light-up sneakers", "A Frozen nightgown"], "photos": ["leggings-1.jpg", "leggings-2.jpg"] },
-    { "family": true, "q": "What was the first gift Bryce gave his mother?", "a": ["A book called “Redirecting Children’s Misbehavior”", "A macaroni necklace", "A “World’s Best Mom” mug", "A bouquet of dandelions"], "photos": ["book.jpg"] },
+    { "family": true, "q": "What child-size clothing did Peter get Ev?", "a": ["Pink leggings", "A black leather jacket", "Baby blue socks", "Light-up sneakers"], "photos": ["leggings-1.jpg", "leggings-2.jpg"] },
+    { "family": true, "q": "What was the first gift Bryce gave his mother?", "a": ["A book called “Redirecting Children’s Misbehavior”", "A macaroni necklace", "A “World’s Best Mom” mug", "A homemade coupon book"], "photos": ["book.jpg"] },
     { "family": true, "q": "Where did Uncle Jay get this top for his sister Barb?", "a": ["Value Village", "Winners", "The Bay", "Sears"], "photos": ["value-village-top.jpg"], "showPhotos": "question" },
     { "family": true, "q": "What kind of shirt is Uncle Jay wearing?", "a": ["A dashiki", "A kimono", "A guayabera", "A kurta"], "photos": ["jay-dashiki.jpg"], "showPhotos": "question", "fact": "It’s a West African tunic in the famous “Angelina” print. It was the comeback for the Value Village top he gave Barb about 20 years ago." },
     { "q": "What is Santa’s postal code in Canada?", "a": ["H0H 0H0", "N0R 7H5", "X0X 0X0", "J1N 6L3"], "fact": "Canada Post’s elves answer letters sent to Santa at the North Pole, H0H 0H0." },
